@@ -1,0 +1,57 @@
+[
+ {
+   "name": "滿福堡",
+   "price": 57,
+   "calorie": 288
+ },
+ {
+   "name": "豬肉滿福堡",
+   "price": 55,
+   "calorie": 320
+ },
+ {
+   "name": "豬肉滿福堡加蛋",
+   "price": 65,
+   "calorie": 320
+ },
+ {
+   "name": "無敵豬肉滿福堡加蛋",
+   "price": 85,
+   "calorie": 390
+ },
+ {
+   "name": "滿福香鷄堡加蛋",
+   "price": 65,
+   "calorie": 521
+ },
+ {
+   "name": "滿福香鷄堡",
+   "price": 55,
+   "calorie": 366
+ },
+ {
+   "name": "滿福鮮蔬堡",
+   "price": 63,
+   "calorie": 246
+ },
+ {
+   "name": "鮮蔬火腿蛋堡",
+   "price": 63,
+   "calorie": 278
+ },
+ {
+   "name": "吉事蛋堡",
+   "price": 39,
+   "calorie": 272
+ },
+ {
+   "name": "哈姆吉事堡",
+   "price": 49,
+   "calorie": 272
+ },
+ {
+   "name": "火腿蛋堡",
+   "price": 57,
+   "calorie": 320
+ }
+]

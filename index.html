@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>早起的鳥兒有早餐吃</title>
+    <script src="https://d3js.org/d3.v3.js"></script>
+    <script src="https://use.fontawesome.com/816847bb18.js"></script>
+    
+    <style>
+      
+      .axis path, .axis line{
+        fill: none;
+        stroke: #3E362B;
+        shape-rendering: auto;
+      }
+      .axis text{
+        font-size: 20px;
+        fill: #3E362B;
+      }
+      
+      .button-container {
+        margin-left: 50px;
+      }
+  
+      .button{
+        background-color: #F2F2F2;  
+        color: #3E362B;
+        border: none;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 19px 22px;
+        border-radius: 55%;
+        transition: all 0.5s;
+      }
+      
+      .button:hover, .selected-button {
+        background-color: #3E362B;  
+        color: #F2F2F2;
+        border: none;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        outline:0;
+      }
+      
+      .button span {
+        letter-spacing: 3px;
+      }
+      
+      #svg_container {
+        margin-top: 30px;
+        margin-left: 30px;
+      }
+      
+      .main-container {
+        margin: 30px;
+      }
+      
+    </style>
+</head>
+<body>
+
+  <div class="main-container">
+    <div class="button-container">
+      <button type="button" id="price-button" class="button selected-button" onclick="showPrice()" >
+        <i class="fa fa-money" aria-hidden="true"></i></br>
+        <span>價錢</span>
+      </button>
+
+      <button type="button" id="calorie-button" class="button" onclick="showCalorie()" >
+        <i class="fa fa-free-code-camp" aria-hidden="true"></i></br>
+        <span>熱量</span>
+      </button>  
+    </div>
+     
+    
+    <div id='svg_container'>
+    </div>
+    
+  </div>
+<script>
+
+  var width = 900;
+  var height = 400;
+  var yPadding = 90;
+  var leftPadding = 200;
+  
+  
+  var xScaleConverter;
+
+  createSvg();
+  showPrice();
+  
+  function createSvg() {
+    d3.select("#svg_container").append("svg").attr({
+      width: width,
+      height: height
+    });
+  }    
+  
+  function showCalorie(){
+    d3.select("#price-button").classed("selected-button", false);
+    d3.select("#calorie-button").classed("selected-button", true);
+    d3.select("#axisX").remove();
+    d3.select("#axisY").remove();
+    
+    d3.json('Mc-breakfast.json', function(data){
+      // Draw xScale
+      xScaleConverter = d3.scale.linear()
+        .domain([ 0, maxCalorie(data) ])
+        .range([leftPadding, width ]);
+
+      var xAxis = d3.svg.axis().scale(xScaleConverter).orient("bottom");
+      d3.select("svg").append("g").attr({
+        id: 'axisX',
+        class: 'axis',
+        transform: "translate(0," + (height - yPadding + 20) + ")"
+      }).call(xAxis);
+
+      //Draw Y-scale Text
+      yScaleConverter = d3.scale.ordinal()
+        .domain(["滿福堡", "豬肉滿福堡", "豬肉滿福堡加蛋", "無敵豬肉滿福堡加蛋", "滿福香雞堡加蛋", "滿福香雞堡",
+                 "滿福鮮蔬堡", "鮮蔬火腿蛋堡", "吉事蛋堡", "哈姆吉事堡", "火腿蛋堡"])
+        .rangePoints([height-yPadding, 30])
+      
+      var yAxis = d3.svg.axis().scale(yScaleConverter).orient("left");
+      d3.select("svg").append("g").attr({
+        id: 'axisY',
+        class: 'axis',
+        transform: "translate(" + (leftPadding - 10) + "," + 0 + ")"
+      }).call(yAxis);
+      
+      
+      // Draw Rects - Bind Data
+      bindData(data);
+      // Draw Rects - Draw
+      d3.selectAll("rect")
+        .transition()
+        .attr("x", leftPadding)
+        .attr("y", function(row, index) { return height - yPadding - 28*index - 4; })
+        .attr("width", function(row){  return xScaleConverter(row.calorie) - leftPadding;  })
+        .attr('height', 10)
+        .attr('fill', "#3E362B");
+       
+    });
+
+    function minCalorie(data) {
+      return d3.min(data, function(row){
+        return row.calorie;
+      });
+    }
+
+    function maxCalorie(data) {
+      return d3.max(data, function(row){
+        return row.calorie;
+      });
+    }
+
+    function bindData(data){
+      var selection = d3.select("svg").selectAll("rect").data(data);
+      selection.enter().append("rect");
+      selection.exit().remove();
+    }
+  }
+
+
+  function showPrice(){
+    d3.select("#calorie-button").classed("selected-button", false);
+    d3.select("#price-button").classed("selected-button", true);
+    d3.select("#axisX").remove();
+    d3.select("#axisY").remove();
+
+    d3.json('Mc-breakfast.json', function(data){
+      // Draw xScale
+      xScaleConverter = d3.scale.linear()
+        .domain([ 0, maxPrice(data) ])
+        .range([leftPadding, width ]);
+
+      var xAxis = d3.svg.axis().scale(xScaleConverter).orient("bottom");
+      d3.select("svg").append("g").attr({
+        id: 'axisX',
+        class: 'axis',
+        transform: "translate(0," + (height - yPadding + 20) + ")"
+      }).call(xAxis);
+
+      //Draw Y-scale Text
+      yScaleConverter = d3.scale.ordinal()
+        .domain(["滿福堡", "豬肉滿福堡", "豬肉滿福堡加蛋", "無敵豬肉滿福堡加蛋", "滿福香雞堡加蛋", "滿福香雞堡",
+                 "滿福鮮蔬堡", "鮮蔬火腿蛋堡", "吉事蛋堡", "哈姆吉事堡", "火腿蛋堡"])
+        .rangePoints([height-yPadding, 30])
+
+      var yAxis = d3.svg.axis().scale(yScaleConverter).orient("left");
+      d3.select("svg").append("g").attr({
+        id: 'axisY',
+        class: 'axis',
+        transform: "translate(" + (leftPadding - 10) + "," + 0 + ")"
+      }).call(yAxis);
+
+
+      // Draw Rects - Bind Data
+      bindData(data);
+      // Draw Rects - Draw
+      d3.selectAll("rect")
+        .transition()
+        .attr("x", leftPadding)
+        .attr("y", function(row, index) { return height - yPadding - 28*index - 4; })
+        .attr("width", function(row){  return xScaleConverter(row.price) - leftPadding; })
+        .attr('height', 10)
+        .attr('fill', "#3E362B");
+  
+    });
+    
+
+    function minPrice(data) {
+      return d3.min(data, function(row){
+        return row.price;
+      });
+    }
+
+    function maxPrice(data) {
+      return d3.max(data, function(row){
+        return row.price;
+      });
+    }
+
+    function bindData(data){
+      var selection = d3.select("svg").selectAll("rect").data(data);
+      selection.enter().append("rect");
+      selection.exit().remove();
+    }
+  }
+    
+
+  </script>
+
+</body>
+</html>
